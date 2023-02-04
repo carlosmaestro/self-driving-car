@@ -1,5 +1,6 @@
-import Controls from "./controls.js";
-import Sensor from "./sensor.js";
+import Controls from './controls.js';
+import Sensor from './sensor.js';
+import { polysIntersect } from './utils.js';
 
 export default class Car {
   constructor(x, y, width, height) {
@@ -15,6 +16,7 @@ export default class Car {
     this.friction = 0.05;
 
     this.angle = 0;
+    this.damaged = false;
 
     this.sensor = new Sensor(this);
 
@@ -24,9 +26,21 @@ export default class Car {
   }
 
   update(roadBorders) {
-    this.#move();
-    this.polygon = this.#createPolygon();
+    if (!this.damaged) {
+      this.#move();
+      this.polygon = this.#createPolygon();
+      this.damaged = this.#assessDamage(roadBorders);
+    }
     this.sensor.update(roadBorders);
+  }
+
+  #assessDamage(roadBorders) {
+    for (let i = 0; i < roadBorders.length; i++) {
+      if (polysIntersect(this.polygon, roadBorders[i])) {
+        return true;
+      }
+    }
+    return false;
   }
 
   #createPolygon() {
@@ -96,6 +110,13 @@ export default class Car {
   }
 
   draw(ctx) {
+
+    if (this.damaged) {
+      ctx.fillStyle = 'gray';
+    } else {
+      ctx.fillStyle = 'black';
+    }
+
     if (!this.polygon.length)
       return null;
 
