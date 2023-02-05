@@ -10,9 +10,15 @@
 </head>
 
 <body>
+  <script>ready = false;</script>
+  <div id="verticalButtons">
+    <button onclick="window.appContext.save()">💾</button>
+    <button onclick="window.appContext.discard()">🗑️</button>
+  </div>
   <canvas id="carCanvas"></canvas>
   <canvas id="networkCanvas"></canvas>
   <script type="module" src="main.js"></script>
+  <script>ready = true;</script>
 </body>
 
 </html>
