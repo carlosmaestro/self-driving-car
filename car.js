@@ -1,9 +1,10 @@
 import Controls from './controls.js';
 import Sensor from './sensor.js';
+import NeuralNetwork from './network.js';
 import { polysIntersect } from './utils.js';
 
 export default class Car {
-  constructor(x, y, width, height, controlType, maxSpeed=3) {
+  constructor(x, y, width, height, controlType, maxSpeed = 3) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -18,8 +19,13 @@ export default class Car {
     this.angle = 0;
     this.damaged = false;
 
-    if(controlType !='DUMMY'){
+    this.useBrain = controlType == 'AI';
+
+    if (controlType != 'DUMMY') {
       this.sensor = new Sensor(this);
+      this.brain = new NeuralNetwork(
+        [this.sensor.rayCount, 6, 4]
+      );
     }
 
     this.controls = new Controls(controlType);
@@ -33,8 +39,21 @@ export default class Car {
       this.polygon = this.#createPolygon();
       this.damaged = this.#assessDamage(roadBorders, traffic);
     }
-    if(this.sensor){
+    if (this.sensor) {
       this.sensor.update(roadBorders, traffic);
+      const offsets = this.sensor.readings.map(
+        s => s == null ? 0 : 1 - s.offset
+      );
+      const outputs = NeuralNetwork.feedForward(offsets, this.brain);
+
+
+      if (this.useBrain) {
+        this.controls.forward = outputs[0];
+        this.controls.left = outputs[1];
+        this.controls.right = outputs[2];
+        this.controls.reverse = outputs[3];
+      }
+
     }
   }
 
@@ -136,7 +155,7 @@ export default class Car {
     }
     ctx.fill();
 
-    if(this.sensor){
+    if (this.sensor) {
       this.sensor.draw(ctx);
     }
   }
