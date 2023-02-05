@@ -46,4 +46,9 @@ const getRGBA = (value) => {
   return "rgba(" + R + "," + G + "," + B + "," + alpha + ")";
 }
 
-export { lerp, getIntersection, polysIntersect, getRGBA };
+const getRandomColor = () => {
+  const hue = 290 + Math.random() * 260;
+  return `hsl(${hue}, 100%, 60%)`;
+}
+
+export { lerp, getIntersection, polysIntersect, getRGBA, getRandomColor };

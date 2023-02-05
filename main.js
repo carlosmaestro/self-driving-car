@@ -1,6 +1,7 @@
 import Car from './car.js';
 import NeuralNetwork from './network.js';
 import Road from './road.js';
+import { getRandomColor } from './utils.js';
 import Visualizer from './visualizer.js';
 
 const carCanvas = document.getElementById("carCanvas");
@@ -37,13 +38,13 @@ if (localStorage.getItem(BEST_BRAIN_KEY)) {
 // window['car'] = car;
 
 const traffic = [
-  new Car(road.getLaneCenter(1), -100, 30, 50, 'DUMMY', 2),
-  new Car(road.getLaneCenter(0), -300, 30, 50, 'DUMMY', 2),
-  new Car(road.getLaneCenter(2), -100, 30, 50, 'DUMMY', 2),
-  new Car(road.getLaneCenter(0), -500, 30, 50, 'DUMMY', 2),
-  new Car(road.getLaneCenter(1), -500, 30, 50, 'DUMMY', 2),
-  new Car(road.getLaneCenter(1), -700, 30, 50, 'DUMMY', 2),
-  new Car(road.getLaneCenter(2), -700, 30, 50, 'DUMMY', 2),
+  new Car(road.getLaneCenter(1), -100, 30, 50, 'DUMMY', 2, getRandomColor()),
+  new Car(road.getLaneCenter(0), -300, 30, 50, 'DUMMY', 2, getRandomColor()),
+  new Car(road.getLaneCenter(2), -100, 30, 50, 'DUMMY', 2, getRandomColor()),
+  new Car(road.getLaneCenter(0), -500, 30, 50, 'DUMMY', 2, getRandomColor()),
+  new Car(road.getLaneCenter(1), -500, 30, 50, 'DUMMY', 2, getRandomColor()),
+  new Car(road.getLaneCenter(1), -700, 30, 50, 'DUMMY', 2, getRandomColor()),
+  new Car(road.getLaneCenter(2), -700, 30, 50, 'DUMMY', 2, getRandomColor()),
 ];
 
 // car.draw(carCtx);
