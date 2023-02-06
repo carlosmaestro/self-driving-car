@@ -1,7 +1,7 @@
 import Car from './car.js';
 import NeuralNetwork from './network.js';
 import Road from './road.js';
-import { getRandomColor } from './utils.js';
+import { getRandomColor, getRandomInt } from './utils.js';
 import Visualizer from './visualizer.js';
 
 const carCanvas = document.getElementById("carCanvas");
@@ -15,7 +15,7 @@ const networkCtx = networkCanvas.getContext("2d");
 
 const road = new Road(carCanvas.width / 2, carCanvas.width * 0.9);
 
-const N = 100;
+const N = 1;
 const cars = generateCars(N);
 
 const BEST_BRAIN_KEY = 'bestBrain';
@@ -26,7 +26,7 @@ if (localStorage.getItem(BEST_BRAIN_KEY)) {
   let parsedBestBrain = JSON.parse(bestBrain);
   for (let i = 0; i < cars.length; i++) {
     cars[i].brain = JSON.parse(localStorage.getItem(BEST_BRAIN_KEY));
-    if(i!= 0){
+    if (i != 0) {
       NeuralNetwork.mutate(cars[i].brain, 0.2);
     }
   }
@@ -38,14 +38,32 @@ if (localStorage.getItem(BEST_BRAIN_KEY)) {
 // window['car'] = car;
 
 const traffic = [
-  new Car(road.getLaneCenter(1), -100, 30, 50, 'DUMMY', 2, getRandomColor()),
-  new Car(road.getLaneCenter(0), -300, 30, 50, 'DUMMY', 2, getRandomColor()),
-  new Car(road.getLaneCenter(2), -100, 30, 50, 'DUMMY', 2, getRandomColor()),
-  new Car(road.getLaneCenter(0), -500, 30, 50, 'DUMMY', 2, getRandomColor()),
-  new Car(road.getLaneCenter(1), -500, 30, 50, 'DUMMY', 2, getRandomColor()),
-  new Car(road.getLaneCenter(1), -700, 30, 50, 'DUMMY', 2, getRandomColor()),
-  new Car(road.getLaneCenter(2), -700, 30, 50, 'DUMMY', 2, getRandomColor()),
+  new Car(road.getLaneCenter(getRandomInt(3.999)), -100, 30, 50, 'DUMMY', 2, getRandomColor()),
+  new Car(road.getLaneCenter(getRandomInt(3.999)), -300, 30, 50, 'DUMMY', 2, getRandomColor()),
+  new Car(road.getLaneCenter(getRandomInt(3.999)), -100, 30, 50, 'DUMMY', 2, getRandomColor()),
+  new Car(road.getLaneCenter(getRandomInt(3.999)), -500, 30, 50, 'DUMMY', 2, getRandomColor()),
+  new Car(road.getLaneCenter(getRandomInt(3.999)), -500, 30, 50, 'DUMMY', 2, getRandomColor()),
+  new Car(road.getLaneCenter(getRandomInt(3.999)), -700, 30, 50, 'DUMMY', 2, getRandomColor()),
+  new Car(road.getLaneCenter(getRandomInt(3.999)), -700, 30, 50, 'DUMMY', 2, getRandomColor()),
 ];
+// generateInfityTraffic(road);
+// generateInfityTraffic(road);
+// generateInfityTraffic(road);
+// generateInfityTraffic(road);
+// generateInfityTraffic(road);
+
+// const generateInfityTraffic = (road, limit) => {
+//   console.log('generateInfityTraffic');
+//   setTimeout(() => {
+//     traffic.push(new Car(road.getLaneCenter(getRandomInt(3.999)),
+//       bestCar ? bestCar.y - carCanvas.height : -carCanvas.height, 30, 50, 'DUMMY', 2, getRandomColor()));
+//     if (traffic.length <= limit) {
+//       generateInfityTraffic(road, limit);
+//     }
+//   }, Math.random() * 4 * 1000);
+// }
+// generateInfityTraffic(road, 5);
+
 
 // car.draw(carCtx);
 

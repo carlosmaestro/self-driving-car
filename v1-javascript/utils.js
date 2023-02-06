@@ -51,4 +51,8 @@ const getRandomColor = () => {
   return `hsl(${hue}, 100%, 60%)`;
 }
 
-export { lerp, getIntersection, polysIntersect, getRGBA, getRandomColor };
+const getRandomInt = (max) => {
+  return Math.floor(Math.random() * max);
+}
+
+export { lerp, getIntersection, polysIntersect, getRGBA, getRandomColor, getRandomInt };
