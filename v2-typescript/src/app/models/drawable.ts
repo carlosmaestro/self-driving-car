@@ -1,8 +1,8 @@
+import { Point } from "./point";
 
 
 export interface IDrawable {
-  x?: number; 
-  y?: number; 
+  anchor?: Point;
   width?: number; 
   height?: number;
   angle?: number;
@@ -10,19 +10,18 @@ export interface IDrawable {
 
 /** Representa um componente desenhavel em um Canvas  */
 export class Drawable implements IDrawable {
-  x: number;
-  y: number;
+  anchor?: Point;
   width?: number; 
   height?: number;
   angle?: number;
 
   constructor(data?: IDrawable) {
-    const { x, y, width, height } = data;
+    const { anchor, width, height, angle } = data;
 
-    this.x = x;
-    this.y = y;
+    this.anchor = anchor;
     this.width = width;
     this.height = height;
+    this.angle = angle || 0;
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
