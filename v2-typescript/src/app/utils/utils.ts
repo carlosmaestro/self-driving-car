@@ -1,10 +1,11 @@
+import { Intersection } from "../models/intersection";
 import { Point } from "../models/point";
 
 export const lerp = (A: number, B: number, t: number) => {
   return A + (B - A) * t;
 }
 
-export const getIntersection = (A: Point, B: Point, C: Point, D: Point) => {
+export const getIntersection = (A: Point, B: Point, C: Point, D: Point): Intersection => {
   const tTop = (D.x - C.x) * (A.y - C.y) - (D.y - C.y) * (A.x - C.x);
   const uTop = (C.y - A.y) * (A.x - B.x) - (C.x - A.x) * (A.y - B.y);
   const bottom = (D.y - C.y) * (B.x - A.x) - (D.x - C.x) * (B.y - A.y);
@@ -15,8 +16,10 @@ export const getIntersection = (A: Point, B: Point, C: Point, D: Point) => {
 
     if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
       return {
-        x: lerp(A.x, B.x, t),
-        y: lerp(A.y, B.y, t),
+        anchor: {
+          x: lerp(A.x, B.x, t),
+          y: lerp(A.y, B.y, t)
+        },
         offset: t
       }
     }

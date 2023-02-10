@@ -1,3 +1,5 @@
+export const CAR_WIDTH = 40;
+export const CAR_HEIGHT = 70;
 export const CAR_MAX_SPEED = 3;
 export const CAR_ACCELERATION = 0.2;
 export const CAR_FRICTION = 0.05;

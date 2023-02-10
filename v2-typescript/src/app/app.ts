@@ -32,7 +32,7 @@ export class App {
 
     this.road = new Road({ anchor: { x: this.mainCanvas.width / 2 }, width: this.mainCanvas.width * 0.9 });
 
-    this.cars.push(new Car({ anchor: { x: 100, y: 200 }, width: 30, height: 50, maxSpeed: 3, controlType: CarControlType.KEYS }));
+    this.cars.push(new Car({ anchor: { x: 100, y: 700 }, controlType: CarControlType.KEYS }));
     console.log(this);
 
     console.log(this.mainCanvas.height);
@@ -57,6 +57,10 @@ export class App {
 
     this.mainCanvas.height = window.innerHeight;
     this.mainCtx.save();
+
+    // movimento camera
+    this.mainCtx.translate(0, -this.cars[0].anchor.y + this.mainCanvas.height * 0.7);
+    
     this.road.draw(this.mainCtx);
     for (let i = 0; i < this.cars.length; i++) {
 

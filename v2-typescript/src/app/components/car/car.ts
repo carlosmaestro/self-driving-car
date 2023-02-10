@@ -1,4 +1,4 @@
-import { CAR_ACCELERATION, CAR_COLOR, CAR_FRICTION, CAR_IMAGE_SRC, CAR_MAX_SPEED } from '../../config/car.config';
+import { CAR_ACCELERATION, CAR_COLOR, CAR_FRICTION, CAR_HEIGHT, CAR_IMAGE_SRC, CAR_MAX_SPEED, CAR_WIDTH } from '../../config/car.config';
 import { CarControlType } from '../../enums/car-control-type.enum';
 import { Drawable, IDrawable } from '../../models/drawable';
 import { Point } from '../../models/point';
@@ -13,6 +13,7 @@ export interface ICar extends IDrawable {
   controlType?: CarControlType;
   controls?: CarControls;
   damaged?: boolean;
+  polygon?: Point[];
 }
 
 export class Car extends Drawable implements ICar {
@@ -24,11 +25,15 @@ export class Car extends Drawable implements ICar {
   controlType: CarControlType;
   controls: CarControls;
   damaged?: boolean;
+  polygon?: Point[];
 
   mask?: HTMLCanvasElement;
   img?: HTMLImageElement;
 
   constructor(data?: ICar) {
+    data.width = data.width || CAR_WIDTH;
+    data.height = data.height || CAR_HEIGHT;
+
     super(data);
 
     const { speed, acceleration, maxSpeed, friction, controlType, damaged, width, height } = data;
@@ -58,6 +63,31 @@ export class Car extends Drawable implements ICar {
     }
 
     console.log(this);
+  }
+
+  createPolygon() {
+    const points: Point[] = [];
+    const rad = Math.hypot(this.width, this.height) / 2;
+    const alpha = Math.atan2(this.width, this.height);
+
+    points.push({
+      x: this.anchor.x - Math.sin(this.angle - alpha) * rad,
+      y: this.anchor.y - Math.cos(this.angle - alpha) * rad,
+    });
+    points.push({
+      x: this.anchor.x - Math.sin(this.angle + alpha) * rad,
+      y: this.anchor.y - Math.cos(this.angle + alpha) * rad,
+    });
+    points.push({
+      x: this.anchor.x - Math.sin(Math.PI + this.angle - alpha) * rad,
+      y: this.anchor.y - Math.cos(Math.PI + this.angle - alpha) * rad,
+    });
+    points.push({
+      x: this.anchor.x - Math.sin(Math.PI + this.angle + alpha) * rad,
+      y: this.anchor.y - Math.cos(Math.PI + this.angle + alpha) * rad,
+    });
+
+    return points;
   }
 
   private move() {
@@ -103,6 +133,7 @@ export class Car extends Drawable implements ICar {
 
   update(roadBorders?: [Point, Point][], traffic?: any) {
     this.move();
+    this.polygon = this.createPolygon();
     // if (!this.damaged) {
     //   this.#move();
     //   this.polygon = this.#createPolygon();
