@@ -1,8 +1,11 @@
-import { CAR_ACCELERATION, CAR_COLOR, CAR_FRICTION, CAR_HEIGHT, CAR_IMAGE_SRC, CAR_MAX_SPEED, CAR_WIDTH } from '../../config/car.config';
+import { CAR_ACCELERATION, CAR_COLOR, CAR_DRAW_SENSOR, CAR_FRICTION, CAR_HEIGHT, CAR_IMAGE_SRC, CAR_MAX_SPEED, CAR_WIDTH } from '../../config/car.config';
 import { CarControlType } from '../../enums/car-control-type.enum';
+import { Border } from '../../models/border';
 import { Drawable, IDrawable } from '../../models/drawable';
 import { Point } from '../../models/point';
+import { getValueOrDefault, polysIntersect } from '../../utils/utils';
 import { CarControls } from './controls';
+import { Sensor } from './sensor';
 
 export interface ICar extends IDrawable {
   speed?: number;
@@ -14,6 +17,8 @@ export interface ICar extends IDrawable {
   controls?: CarControls;
   damaged?: boolean;
   polygon?: Point[];
+  sensor?: Sensor;
+  drawSensor?: boolean;
 }
 
 export class Car extends Drawable implements ICar {
@@ -26,6 +31,8 @@ export class Car extends Drawable implements ICar {
   controls: CarControls;
   damaged?: boolean;
   polygon?: Point[];
+  sensor?: Sensor;
+  drawSensor?: boolean;
 
   mask?: HTMLCanvasElement;
   img?: HTMLImageElement;
@@ -36,14 +43,34 @@ export class Car extends Drawable implements ICar {
 
     super(data);
 
-    const { speed, acceleration, maxSpeed, friction, controlType, damaged, width, height } = data;
+    const { speed,
+      acceleration,
+      maxSpeed,
+      friction,
+      controlType,
+      damaged,
+      width,
+      height,
+      drawSensor
+    } = data;
+
     this.speed = speed || 0;
     this.acceleration = acceleration || CAR_ACCELERATION;
     this.maxSpeed = maxSpeed || CAR_MAX_SPEED;
     this.friction = friction || CAR_FRICTION;
-    this.controlType = controlType || CarControlType.DUMMY;
+    this.controlType = getValueOrDefault(controlType, CarControlType.DUMMY);
 
     this.controls = new CarControls(controlType);
+
+    if (this.controlType != CarControlType.DUMMY) {
+      this.sensor = new Sensor(this);
+      // this.brain = new NeuralNetwork(
+      //   [this.sensor.rayCount, 6, 4]
+      // );
+    }
+
+    this.drawSensor = drawSensor || CAR_DRAW_SENSOR;
+
     this.damaged = damaged || false;
 
     // todo separar contexto
@@ -131,16 +158,16 @@ export class Car extends Drawable implements ICar {
     this.anchor.y -= Math.cos(this.angle) * this.speed;
   }
 
-  update(roadBorders?: [Point, Point][], traffic?: any) {
-    this.move();
-    this.polygon = this.createPolygon();
-    // if (!this.damaged) {
-    //   this.#move();
-    //   this.polygon = this.#createPolygon();
-    //   this.damaged = this.#assessDamage(roadBorders, traffic);
-    // }
-    // if (this.sensor) {
-    //   this.sensor.update(roadBorders, traffic);
+  update(roadBorders?: Border[], traffic?: any) {
+    // this.move();
+    // this.polygon = this.createPolygon();
+    if (!this.damaged) {
+      this.move();
+      this.polygon = this.createPolygon();
+      this.damaged = this.assessDamage(roadBorders, traffic);
+    }
+    if (this.sensor) {
+      this.sensor.update(roadBorders, traffic);
     //   const offsets = this.sensor.readings.map(
     //     s => s == null ? 0 : 1 - s.offset
     //   );
@@ -154,13 +181,27 @@ export class Car extends Drawable implements ICar {
     //     this.controls.reverse = outputs[3];
     //   }
 
-    // }
+    }
+  }
+
+  assessDamage(roadBorders: Border[], traffic: Car[]) {
+    for (let i = 0; i < roadBorders.length; i++) {
+      if (polysIntersect(this.polygon, roadBorders[i])) {
+        return true;
+      }
+    }
+    for (let i = 0; i < traffic.length; i++) {
+      if (polysIntersect(this.polygon, traffic[i].polygon)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
-    // if (this.sensor && drawSensor) {
-    //   this.sensor.draw(ctx);
-    // }
+    if (this.sensor && this.drawSensor) {
+      this.sensor.draw(ctx);
+    }
 
     ctx.save();
     ctx.translate(this.anchor.x, this.anchor.y);

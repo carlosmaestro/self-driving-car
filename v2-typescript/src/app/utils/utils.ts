@@ -59,3 +59,10 @@ export const getRandomColor = () => {
 export const getRandomInt = (max: number) => {
   return Math.floor(Math.random() * max);
 }
+
+export const getValueOrDefault = (value: any, valueDefault : any) => {
+  if (value !== undefined) {
+    return value;
+  }
+  return valueDefault ;
+}

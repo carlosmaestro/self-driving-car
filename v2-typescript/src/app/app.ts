@@ -32,7 +32,7 @@ export class App {
 
     this.road = new Road({ anchor: { x: this.mainCanvas.width / 2 }, width: this.mainCanvas.width * 0.9 });
 
-    this.cars.push(new Car({ anchor: { x: 100, y: 700 }, controlType: CarControlType.KEYS }));
+    this.cars.push(new Car({ anchor: { x: 100, y: 700 }, controlType: CarControlType.KEYS, drawSensor: true }));
     console.log(this);
 
     console.log(this.mainCanvas.height);
@@ -50,6 +50,10 @@ export class App {
 
   animate(time?: number) {
     // console.log(time);
+
+    for (let i = 0; i < this.cars.length; i++) {
+      this.cars[i].update(this.road.borders, this.traffic);
+    }
 
     for (let i = 0; i < this.cars.length; i++) {
       this.cars[i].update(this.road.borders, this.traffic);
