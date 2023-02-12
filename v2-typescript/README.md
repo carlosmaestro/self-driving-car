@@ -9,3 +9,7 @@ npm install
 npm run build
 npm run start
 ```
+--- 
+## TODO LIST
+- [-] App
+  - [-] Mapear constantes de configuração

@@ -51,18 +51,18 @@ export const getRGBA = (value: number) => {
   return "rgba(" + R + "," + G + "," + B + "," + alpha + ")";
 }
 
-export const getRandomColor = () => {
+export const getRandomColor = (): string => {
   const hue = 290 + Math.random() * 260;
-  return `hsl(${hue}, 100%, 60%)`;
+return `hsl(${hue}, 100%, 60%)`;
 }
 
 export const getRandomInt = (max: number) => {
   return Math.floor(Math.random() * max);
 }
 
-export const getValueOrDefault = (value: any, valueDefault : any) => {
+export const getValueOrDefault = (value: any, valueDefault: any) => {
   if (value !== undefined) {
     return value;
   }
-  return valueDefault ;
+  return valueDefault;
 }

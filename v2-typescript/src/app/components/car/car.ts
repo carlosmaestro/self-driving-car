@@ -4,6 +4,7 @@ import { Border } from '../../models/border';
 import { Drawable, IDrawable } from '../../models/drawable';
 import { Point } from '../../models/point';
 import { getValueOrDefault, polysIntersect } from '../../utils/utils';
+import NeuralNetwork from '../network/network';
 import { CarControls } from './controls';
 import { Sensor } from './sensor';
 
@@ -19,6 +20,10 @@ export interface ICar extends IDrawable {
   polygon?: Point[];
   sensor?: Sensor;
   drawSensor?: boolean;
+  color?: string;
+  mask?: HTMLCanvasElement;
+  img?: HTMLImageElement;
+  brain?: NeuralNetwork;
 }
 
 export class Car extends Drawable implements ICar {
@@ -33,9 +38,10 @@ export class Car extends Drawable implements ICar {
   polygon?: Point[];
   sensor?: Sensor;
   drawSensor?: boolean;
-
+  color?: string;
   mask?: HTMLCanvasElement;
   img?: HTMLImageElement;
+  brain?: NeuralNetwork;
 
   constructor(data?: ICar) {
     data.width = data.width || CAR_WIDTH;
@@ -51,7 +57,8 @@ export class Car extends Drawable implements ICar {
       damaged,
       width,
       height,
-      drawSensor
+      drawSensor,
+      color,
     } = data;
 
     this.speed = speed || 0;
@@ -62,11 +69,13 @@ export class Car extends Drawable implements ICar {
 
     this.controls = new CarControls(controlType);
 
+    this.useBrain = controlType == CarControlType.AI;
+
     if (this.controlType != CarControlType.DUMMY) {
       this.sensor = new Sensor(this);
-      // this.brain = new NeuralNetwork(
-      //   [this.sensor.rayCount, 6, 4]
-      // );
+      this.brain = new NeuralNetwork(
+        [this.sensor.rayCount, 6, 4]
+      );
     }
 
     this.drawSensor = drawSensor || CAR_DRAW_SENSOR;
@@ -81,7 +90,7 @@ export class Car extends Drawable implements ICar {
     this.mask.height = height;
     const maskCtx = this.mask.getContext('2d');
     this.img.onload = () => {
-      maskCtx.fillStyle = CAR_COLOR;
+      maskCtx.fillStyle = color || CAR_COLOR;
       maskCtx.rect(0, 0, this.width, this.height);
       maskCtx.fill();
 
@@ -159,28 +168,26 @@ export class Car extends Drawable implements ICar {
   }
 
   update(roadBorders?: Border[], traffic?: any) {
-    // this.move();
-    // this.polygon = this.createPolygon();
     if (!this.damaged) {
       this.move();
       this.polygon = this.createPolygon();
       this.damaged = this.assessDamage(roadBorders, traffic);
     }
+
     if (this.sensor) {
       this.sensor.update(roadBorders, traffic);
-    //   const offsets = this.sensor.readings.map(
-    //     s => s == null ? 0 : 1 - s.offset
-    //   );
-    //   const outputs = NeuralNetwork.feedForward(offsets, this.brain);
+      const offsets = this.sensor.readings.map(
+        s => s == null ? 0 : 1 - s.offset
+      );
 
+      const outputs = NeuralNetwork.feedForward(offsets, this.brain);
 
-    //   if (this.useBrain) {
-    //     this.controls.forward = outputs[0];
-    //     this.controls.left = outputs[1];
-    //     this.controls.right = outputs[2];
-    //     this.controls.reverse = outputs[3];
-    //   }
-
+      if (this.useBrain) {
+        this.controls.forward = outputs[0] === 1;
+        this.controls.left = outputs[1] === 1;
+        this.controls.right = outputs[2] === 1;
+        this.controls.reverse = outputs[3] === 1;
+      }
     }
   }
 
@@ -198,8 +205,8 @@ export class Car extends Drawable implements ICar {
     return false;
   }
 
-  draw(ctx: CanvasRenderingContext2D): void {
-    if (this.sensor && this.drawSensor) {
+  draw(ctx: CanvasRenderingContext2D, drawSensor: boolean = false): void {
+    if (this.sensor && (this.drawSensor || drawSensor)) {
       this.sensor.draw(ctx);
     }
 
