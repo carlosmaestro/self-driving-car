@@ -3,12 +3,35 @@
   <head>
     <meta charset="utf-8" />
     <title>Self Driving Car - Typescript</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
   </head>
+
   <body>
     <div id="verticalButtons">
-      <button onclick="window.appContext.saveState()">💾</button>
-      <button onclick="window.appContext.discardState()">🗑️</button>
+      <button
+        onclick="window.appContext.saveState()"
+        title="Salvar o estado atual"
+      >
+        💾
+      </button>
+      <button
+        onclick="window.appContext.discardState()"
+        title="Descartar o estado salvo"
+      >
+        🗑️
+      </button>
+      <button
+        onclick="window.appContext.restoreProcesses()"
+        title="Restaurar o processamento"
+      >
+        ⏭
+      </button>
+      <button
+        onclick="window.appContext.pauseProcesses()"
+        title="Pausar o processamento"
+      >
+        ⏸
+      </button>
     </div>
     <canvas id="mainCanvas"></canvas>
     <canvas id="networkCanvas"></canvas>

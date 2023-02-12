@@ -44,7 +44,7 @@ export default class NeuralNetwork {
 
 }
 
-class Level {
+export class Level {
 
   inputs: number[];
   outputs: number[];

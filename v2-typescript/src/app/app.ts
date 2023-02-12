@@ -1,20 +1,24 @@
 import { Car } from "./components/car/car";
 import NeuralNetwork from "./components/network/network";
+import { Visualizer } from "./components/network/visualizer";
 import { Road } from "./components/road/road";
-import { BEST_BRAIN_KEY, NUMBER_OF_CARS } from "./config/app.config";
+import { BEST_BRAIN_KEY, MAIN_CANVAS_ID, NERTWORK_CANVAS_ID, NUMBER_OF_CARS } from "./config/app.config";
 import { CarControlType } from "./enums/car-control-type.enum";
 import { getRandomColor, getRandomInt } from "./utils/utils";
 
 // const car = new Car();
 // const road = new Road();
 
-const MAIN_CANVAS_ID = 'mainCanvas';
+
 
 export class App {
   /* - */
 
   mainCanvas: HTMLCanvasElement;
   mainCtx: CanvasRenderingContext2D;
+
+  networkCanvas: HTMLCanvasElement;
+  networkCtx: CanvasRenderingContext2D;
 
   road: Road;
 
@@ -24,12 +28,15 @@ export class App {
   N: number;
   bestCar?: Car;
   bestBrain?: Car;
+
+  pausedProcessors: boolean;
   /* - */
   constructor() {
     console.log('Iniciando app...');
     this.cars = [];
     this.traffic = [];
     this.N = NUMBER_OF_CARS;
+    this.pausedProcessors = false;
     this.orchestrator();
 
     let w = window as any;
@@ -39,6 +46,8 @@ export class App {
   orchestrator() {
     this.getMainCanvas();
     this.getMainCtx();
+    this.getNetworkCanvas();
+    this.getNetworkCtx();
     // this.testCanvas(this.mainCtx);
 
     this.road = new Road({ anchor: { x: this.mainCanvas.width / 2 }, width: this.mainCanvas.width * 0.9 });
@@ -54,7 +63,7 @@ export class App {
 
     this.traffic = [
       // new Car({ anchor: { x: this.road.getLaneCenter(getRandomInt(3.999)), y: -100 }, controlType: CarControlType.DUMMY, color: getRandomColor() }),
-      new Car({ anchor: { x: this.road.getLaneCenter(0), y: -1000}, controlType: CarControlType.DUMMY, color: getRandomColor(), maxSpeed: 2 }),
+      new Car({ anchor: { x: this.road.getLaneCenter(0), y: -1000 }, controlType: CarControlType.DUMMY, color: getRandomColor(), maxSpeed: 2 }),
       new Car({ anchor: { x: this.road.getLaneCenter(1), y: -900 }, controlType: CarControlType.DUMMY, color: getRandomColor(), maxSpeed: 2 }),
       new Car({ anchor: { x: this.road.getLaneCenter(2), y: -900 }, controlType: CarControlType.DUMMY, color: getRandomColor(), maxSpeed: 2 }),
       new Car({ anchor: { x: this.road.getLaneCenter(3), y: -700 }, controlType: CarControlType.DUMMY, color: getRandomColor(), maxSpeed: 2 }),
@@ -77,6 +86,14 @@ export class App {
       }
       // bestCar = cars[0];
     }
+  }
+
+  pauseProcesses() {
+    this.pausedProcessors = true;
+  }
+
+  restoreProcesses() {
+    this.pausedProcessors = false;
   }
 
   saveState() {
@@ -103,44 +120,59 @@ export class App {
     this.mainCtx = this.mainCanvas.getContext('2d');
   }
 
+  getNetworkCanvas() {
+    this.networkCanvas = document.getElementById(NERTWORK_CANVAS_ID) as HTMLCanvasElement;
+  }
+
+  getNetworkCtx() {
+    this.networkCtx = this.networkCanvas.getContext('2d');
+  }
+
   animate(time?: number) {
-    // console.log(time);
+    if (!this.pausedProcessors) {
 
-    for (let i = 0; i < this.traffic.length; i++) {
-      this.traffic[i].update(this.road.borders, []);
+      // console.log(time);
+
+      for (let i = 0; i < this.traffic.length; i++) {
+        this.traffic[i].update(this.road.borders, []);
+      }
+
+      for (let i = 0; i < this.cars.length; i++) {
+        this.cars[i].update(this.road.borders, this.traffic);
+      }
+
+      this.bestCar = this.cars.find(c => c.anchor.y == Math.min(
+        ...this.cars.map(c => c.anchor.y)
+      ));
+
+      this.mainCanvas.height = window.innerHeight;
+      this.networkCanvas.height = window.innerHeight;
+      this.mainCtx.save();
+
+      // movimento camera
+      this.mainCtx.translate(0, -this.bestCar.anchor.y + this.mainCanvas.height * 0.7);
+
+      this.road.draw(this.mainCtx);
+
+      for (let i = 0; i < this.traffic.length; i++) {
+        this.traffic[i].draw(this.mainCtx);
+      }
+
+      this.mainCtx.globalAlpha = 0.2;
+
+      for (let i = 0; i < this.cars.length; i++) {
+        this.cars[i].draw(this.mainCtx);
+      }
+
+      this.mainCtx.globalAlpha = 1;
+
+      this.bestCar.draw(this.mainCtx, true);
+
+      this.mainCtx.restore();
+
+      this.networkCtx.lineDashOffset = -time / 50;
+      Visualizer.drawNetwork(this.networkCtx, this.bestCar.brain);
     }
-
-    for (let i = 0; i < this.cars.length; i++) {
-      this.cars[i].update(this.road.borders, this.traffic);
-    }
-
-    this.bestCar = this.cars.find(c => c.anchor.y == Math.min(
-      ...this.cars.map(c => c.anchor.y)
-    ));
-
-    this.mainCanvas.height = window.innerHeight;
-    this.mainCtx.save();
-
-    // movimento camera
-    this.mainCtx.translate(0, -this.bestCar.anchor.y + this.mainCanvas.height * 0.7);
-
-    this.road.draw(this.mainCtx);
-
-    for (let i = 0; i < this.traffic.length; i++) {
-      this.traffic[i].draw(this.mainCtx);
-    }
-
-    this.mainCtx.globalAlpha = 0.2;
-
-    for (let i = 0; i < this.cars.length; i++) {
-      this.cars[i].draw(this.mainCtx);
-    }
-
-    this.mainCtx.globalAlpha = 1;
-
-    this.bestCar.draw(this.mainCtx, true);
-
-    this.mainCtx.restore();
 
     requestAnimationFrame(this.animate.bind(this));
   }
