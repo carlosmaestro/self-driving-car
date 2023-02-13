@@ -1,5 +1,6 @@
 import { getRGBA, lerp } from "../../utils/utils";
-import NeuralNetwork, { Level } from "./network";
+import { Level } from "./level";
+import NeuralNetwork from "./network";
 
 export class Visualizer {
   static drawNetwork(ctx: CanvasRenderingContext2D, network: NeuralNetwork) {
@@ -24,7 +25,7 @@ export class Visualizer {
       Visualizer.drawLevel(ctx, network.levels[i],
         left, levelTop, width, levelHight,
         i == network.levels.length - 1
-          ? ['🠉', '🠈', '🠊', '🠋']
+          ? ['🠉', '🠈', '🠊', '🠋', 'P']
           : []);
     }
   }
@@ -99,9 +100,9 @@ export class Visualizer {
         ctx.fillStyle = 'black';
         ctx.strokeStyle = 'white';
         ctx.font = (nodeRadius * 1.5) + 'px Arial';
-        ctx.fillText(outputLabels[i], x, top );
+        ctx.fillText(outputLabels[i], x, top);
         ctx.lineWidth = 0.5;
-        ctx.strokeText(outputLabels[i], x, top );
+        ctx.strokeText(outputLabels[i], x, top);
       }
 
     }

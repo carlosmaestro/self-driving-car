@@ -23,6 +23,7 @@ export class CarControls implements ICarControls {
     this.left = false;
     this.right = false;
     this.reverse = false;
+    this.break = false;
 
     switch (controlType) {
       case CarControlType.KEYS:
@@ -38,7 +39,7 @@ export class CarControls implements ICarControls {
 
   private addKeyboardListeners() {
     document.onkeydown = (event) => {
-      switch (event.key) {
+      switch (event.code) {
         case CarControlsKeys.LEFT:
           this.left = true;
           break;
@@ -60,7 +61,7 @@ export class CarControls implements ICarControls {
     };
 
     document.onkeyup = (event) => {
-      switch (event.key) {
+      switch (event.code) {
         case CarControlsKeys.LEFT:
           this.left = false;
           break;

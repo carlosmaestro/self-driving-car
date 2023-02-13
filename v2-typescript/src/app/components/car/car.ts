@@ -1,4 +1,4 @@
-import { CAR_ACCELERATION, CAR_COLOR, CAR_DRAW_SENSOR, CAR_FRICTION, CAR_HEIGHT, CAR_IMAGE_SRC, CAR_MAX_SPEED, CAR_WIDTH } from '../../config/car.config';
+import { CAR_ACCELERATION, CAR_BREAK_MULTIPLIER, CAR_COLOR, CAR_DRAW_SENSOR, CAR_FRICTION, CAR_HEIGHT, CAR_IMAGE_SRC, CAR_MAX_SPEED, CAR_WIDTH, NETWORK_INPUT_COUNT, NETWORK_OUTPUT_COUNT } from '../../config/car.config';
 import { CarControlType } from '../../enums/car-control-type.enum';
 import { Border } from '../../models/border';
 import { Drawable, IDrawable } from '../../models/drawable';
@@ -74,7 +74,7 @@ export class Car extends Drawable implements ICar {
     if (this.controlType != CarControlType.DUMMY) {
       this.sensor = new Sensor(this);
       this.brain = new NeuralNetwork(
-        [this.sensor.rayCount, 6, 4]
+        [this.sensor.rayCount, NETWORK_INPUT_COUNT, NETWORK_OUTPUT_COUNT]
       );
     }
 
@@ -130,8 +130,23 @@ export class Car extends Drawable implements ICar {
     if (this.controls.forward) {
       this.speed += this.acceleration;
     }
+
     if (this.controls.reverse) {
       this.speed -= this.acceleration;
+    }
+
+    if (this.controls.break) {
+      if (this.speed > 0) {
+        this.speed -= CAR_BREAK_MULTIPLIER;
+        if (this.speed < 0) {
+          this.speed = 0
+        }
+      } else if (this.speed < 0) {
+        this.speed += CAR_BREAK_MULTIPLIER;
+        if (this.speed > 0) {
+          this.speed = 0
+        }
+      }
     }
 
     if (this.speed > this.maxSpeed) {
@@ -181,12 +196,12 @@ export class Car extends Drawable implements ICar {
       );
 
       const outputs = NeuralNetwork.feedForward(offsets, this.brain);
-
       if (this.useBrain) {
         this.controls.forward = outputs[0] === 1;
         this.controls.left = outputs[1] === 1;
         this.controls.right = outputs[2] === 1;
         this.controls.reverse = outputs[3] === 1;
+        this.controls.break = outputs[4] === 1;
       }
     }
   }

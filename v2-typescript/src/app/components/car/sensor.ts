@@ -1,3 +1,4 @@
+import { SENSOR_RAY_COUNT, SENSOR_RAY_LENGTH, SENSOR_RAY_LINEWIDTH } from "../../config/car.config";
 import { Border } from "../../models/border";
 import { Intersection } from "../../models/intersection";
 import { Point } from "../../models/point";
@@ -23,8 +24,8 @@ export class Sensor implements ISensor {
 
   constructor(car: Car) {
     this.car = car;
-    this.rayCount = 5;
-    this.reyLength = 200;
+    this.rayCount = SENSOR_RAY_COUNT;
+    this.reyLength = SENSOR_RAY_LENGTH;
     this.raySpread = Math.PI / 2;
     this.rays = [];
     this.readings = [];
@@ -116,7 +117,7 @@ export class Sensor implements ISensor {
 
       ctx.beginPath();
       ctx.strokeStyle = 'yellow';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = SENSOR_RAY_LINEWIDTH;
       ctx.moveTo(
         this.rays[i][0].x,
         this.rays[i][0].y);
@@ -128,7 +129,7 @@ export class Sensor implements ISensor {
 
       ctx.beginPath();
       ctx.strokeStyle = 'black';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = SENSOR_RAY_LINEWIDTH;
       ctx.moveTo(
         this.rays[i][1].x,
         this.rays[i][1].y);

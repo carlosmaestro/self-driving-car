@@ -56,7 +56,7 @@ export class App {
 
     this.loadLastResult();
 
-    // this.cars.push(new Car({ anchor: { x: 100, y: 700 }, controlType: CarControlType.AI, drawSensor: true }));
+    // this.cars.push(new Car({ anchor: { x: 100, y: 700 }, controlType: CarControlType.KEYS, drawSensor: true }));
     console.log(this);
 
     console.log(this.mainCanvas.height);

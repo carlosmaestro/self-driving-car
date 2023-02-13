@@ -13,3 +13,7 @@ npm run start
 ## TODO LIST
 - [-] App
   - [-] Mapear constantes de configuração
+
+- [-] PERFORMANCE
+    DETECTAR CARROS FORA DA TELA
+      REMOVER DA LISTA 
