@@ -63,7 +63,7 @@ export class App {
 
     this.traffic = [
       // new Car({ anchor: { x: this.road.getLaneCenter(getRandomInt(3.999)), y: -100 }, controlType: CarControlType.DUMMY, color: getRandomColor() }),
-      new Car({ anchor: { x: this.road.getLaneCenter(0), y: -1000 }, controlType: CarControlType.DUMMY, color: getRandomColor(), maxSpeed: 2 }),
+      new Car({ anchor: { x: this.road.getLaneCenter(0), y: -1100 }, controlType: CarControlType.DUMMY, color: getRandomColor(), maxSpeed: 2.1 }),
       new Car({ anchor: { x: this.road.getLaneCenter(1), y: -900 }, controlType: CarControlType.DUMMY, color: getRandomColor(), maxSpeed: 2 }),
       new Car({ anchor: { x: this.road.getLaneCenter(2), y: -900 }, controlType: CarControlType.DUMMY, color: getRandomColor(), maxSpeed: 2 }),
       new Car({ anchor: { x: this.road.getLaneCenter(3), y: -700 }, controlType: CarControlType.DUMMY, color: getRandomColor(), maxSpeed: 2 }),
