@@ -1,11 +1,11 @@
 import { Point } from '../../models/point';
 import { Drawable, IDrawable } from './../../models/drawable';
-import { GraphPoint, IGraphPoint } from './graph-point';
+import { GraphPoint } from './graph-point';
 import { GraphSegment, IGraphSegment } from './graph-segment';
 
 
 export interface IGraph extends IDrawable {
-  points?: IGraphPoint[],
+  points?: Point[],
   segments?: IGraphSegment[]
 }
 
