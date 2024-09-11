@@ -5,6 +5,7 @@ export interface IDrawable {
   width?: number;
   height?: number;
   angle?: number;
+  draw(ctx: CanvasRenderingContext2D): void ;
 }
 
 export const getEmptyDrawable = (): IDrawable => {
@@ -13,17 +14,18 @@ export const getEmptyDrawable = (): IDrawable => {
     width: 0,
     height: 0,
     angle: 0,
+    draw(ctx: CanvasRenderingContext2D): void {}
   }
 }
 
 /** Representa um componente desenhavel em um Canvas  */
 export class Drawable implements IDrawable {
-  anchor?: Point;
-  width?: number;
-  height?: number;
-  angle?: number;
+  anchor: Point;
+  width: number;
+  height: number;
+  angle: number;
 
-  constructor(data?: IDrawable) {
+  constructor(data?: Partial<IDrawable>) {
     const { anchor, width, height, angle } = data || getEmptyDrawable();
 
     this.anchor = anchor || ORIGIN;
